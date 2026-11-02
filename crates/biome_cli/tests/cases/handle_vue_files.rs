@@ -1577,3 +1577,57 @@ export default {
         result,
     ));
 }
+
+#[test]
+fn filenaming_convention_reports_once_with_template_expressions() {
+    let fs = MemoryFileSystem::default();
+    let mut console = BufferConsole::default();
+
+    fs.insert(
+        "biome.json".into(),
+        r#"{
+  "html": { "linter": { "enabled": true }, "experimentalFullSupportEnabled": true },
+  "linter": { "rules": { "style": { "useFilenamingConvention": "error" } } }
+}"#
+        .as_bytes(),
+    );
+
+    let file = Utf8Path::new("FooBar.vue");
+    fs.insert(
+        file.into(),
+        r#"<script setup>
+const a = 1;
+</script>
+
+<template>
+  <span>{{ a }}</span>
+  <span>{{ a }}</span>
+  <span>{{ a }}</span>
+</template>
+"#
+        .as_bytes(),
+    );
+
+    let (fs, result) = run_cli(
+        fs,
+        &mut console,
+        Args::from(
+            [
+                "lint",
+                "--only=style/useFilenamingConvention",
+                file.as_str(),
+            ]
+            .as_slice(),
+        ),
+    );
+
+    assert!(result.is_err(), "run_cli returned {result:?}");
+
+    assert_cli_snapshot(SnapshotPayload::new(
+        module_path!(),
+        "filenaming_convention_reports_once_with_template_expressions",
+        fs,
+        console,
+        result,
+    ));
+}

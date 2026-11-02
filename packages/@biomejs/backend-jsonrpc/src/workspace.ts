@@ -3228,6 +3228,11 @@ export interface Nursery {
 	 */
 	noSvelteExportLet?: NoSvelteExportLetConfiguration;
 	/**
+	 * Disallow ignoring the function returned by a store's subscribe() method.
+	 * See https://biomejs.dev/linter/rules/no-svelte-ignored-unsubscribe
+	 */
+	noSvelteIgnoredUnsubscribe?: NoSvelteIgnoredUnsubscribeConfiguration;
+	/**
 	 * Disallow the use of the $inspect rune.
 	 * See https://biomejs.dev/linter/rules/no-svelte-inspect
 	 */
@@ -6466,6 +6471,9 @@ export type NoSvelteClassDirectiveConfiguration =
 export type NoSvelteExportLetConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoSvelteExportLetOptions;
+export type NoSvelteIgnoredUnsubscribeConfiguration =
+	| RulePlainConfiguration
+	| RuleWithNoSvelteIgnoredUnsubscribeOptions;
 export type NoSvelteInspectConfiguration =
 	| RulePlainConfiguration
 	| RuleWithNoSvelteInspectOptions;
@@ -9384,6 +9392,10 @@ export interface RuleWithNoSvelteClassDirectiveOptions {
 export interface RuleWithNoSvelteExportLetOptions {
 	level: RulePlainConfiguration;
 	options?: NoSvelteExportLetOptions;
+}
+export interface RuleWithNoSvelteIgnoredUnsubscribeOptions {
+	level: RulePlainConfiguration;
+	options?: NoSvelteIgnoredUnsubscribeOptions;
 }
 export interface RuleWithNoSvelteInspectOptions {
 	level: RulePlainConfiguration;
@@ -12422,6 +12434,7 @@ export type NoSvelteAtDebugTagsOptions = {};
 export type NoSvelteAtHtmlTagsOptions = {};
 export type NoSvelteClassDirectiveOptions = {};
 export type NoSvelteExportLetOptions = {};
+export type NoSvelteIgnoredUnsubscribeOptions = {};
 export type NoSvelteInspectOptions = {};
 export type NoSvelteInternalOptions = {};
 export type NoSvelteLegacyConstOptions = {};
@@ -14385,15 +14398,15 @@ export type Category =
 	| "lint/nursery/noBooleanSortComparator"
 	| "lint/nursery/noBunModules"
 	| "lint/nursery/noColorInvalidHex"
-	| "lint/nursery/noDanglingUnderscore"
-	| "lint/nursery/noConsoleSpaces"
-	| "lint/nursery/noDuplicateMapKeys"
 	| "lint/nursery/noComponentHookFactories"
 	| "lint/nursery/noConditionalExpect"
+	| "lint/nursery/noConsoleSpaces"
+	| "lint/nursery/noDanglingUnderscore"
 	| "lint/nursery/noDoubleComparison"
 	| "lint/nursery/noDrizzleDeleteWithoutWhere"
 	| "lint/nursery/noDrizzleUpdateWithoutWhere"
 	| "lint/nursery/noDuplicateFieldDefinitionNames"
+	| "lint/nursery/noDuplicateMapKeys"
 	| "lint/nursery/noDuplicateSelectors"
 	| "lint/nursery/noDynamicDelete"
 	| "lint/nursery/noEagerArrayMethodsInLoops"
@@ -14458,6 +14471,7 @@ export type Category =
 	| "lint/nursery/noSvelteAtHtmlTags"
 	| "lint/nursery/noSvelteClassDirective"
 	| "lint/nursery/noSvelteExportLet"
+	| "lint/nursery/noSvelteIgnoredUnsubscribe"
 	| "lint/nursery/noSvelteInspect"
 	| "lint/nursery/noSvelteInternal"
 	| "lint/nursery/noSvelteLegacyConst"
@@ -14509,22 +14523,22 @@ export type Category =
 	| "lint/nursery/noVueDeprecatedScopedSlots"
 	| "lint/nursery/noVueDeprecatedSlotAttribute"
 	| "lint/nursery/noVueDeprecatedSlotScope"
+	| "lint/nursery/noVueDeprecatedVBindSync"
 	| "lint/nursery/noVueDeprecatedVOnNativeModifier"
 	| "lint/nursery/noVueExcessiveProps"
+	| "lint/nursery/noVueImportCompilerMacros"
 	| "lint/nursery/noVueLifecycleAfterAwait"
 	| "lint/nursery/noVueLoneTemplate"
 	| "lint/nursery/noVueMixin"
 	| "lint/nursery/noVueMultipleObjectsInClass"
 	| "lint/nursery/noVueMultipleSlotArgs"
 	| "lint/nursery/noVueMutatingProps"
-	| "lint/nursery/noVueRestrictedCallAfterAwait"
-	| "lint/nursery/noVueDeprecatedVBindSync"
-	| "lint/nursery/noVueRootVIf"
-	| "lint/nursery/noVueImportCompilerMacros"
 	| "lint/nursery/noVueRefAsOperand"
 	| "lint/nursery/noVueRefObjectReactivityLoss"
 	| "lint/nursery/noVueRequiredPropWithDefault"
+	| "lint/nursery/noVueRestrictedCallAfterAwait"
 	| "lint/nursery/noVueRestrictedVOn"
+	| "lint/nursery/noVueRootVIf"
 	| "lint/nursery/noVueShadowNativeEvents"
 	| "lint/nursery/noVueSideEffectsInComputed"
 	| "lint/nursery/noVueTemplateKey"
@@ -14635,9 +14649,9 @@ export type Category =
 	| "lint/nursery/useVueConsistentDefinePropsDeclaration"
 	| "lint/nursery/useVueConsistentEventHyphenation"
 	| "lint/nursery/useVueConsistentVForDelimiter"
-	| "lint/nursery/useVueDefinePropsDestructuring"
-	| "lint/nursery/useVueDefineOptions"
 	| "lint/nursery/useVueDefaultProp"
+	| "lint/nursery/useVueDefineOptions"
+	| "lint/nursery/useVueDefinePropsDestructuring"
 	| "lint/nursery/useVueEmitValidator"
 	| "lint/nursery/useVueEmitsValidatorReturn"
 	| "lint/nursery/useVueMatchingComponentFileName"
@@ -14645,28 +14659,28 @@ export type Category =
 	| "lint/nursery/useVuePropTypeConstructor"
 	| "lint/nursery/useVueRenderReturn"
 	| "lint/nursery/useVueSingleEventPayload"
+	| "lint/nursery/useVueSlotNameCasing"
 	| "lint/nursery/useVueSlotsAsFunctions"
 	| "lint/nursery/useVueTemplateRef"
-	| "lint/nursery/useVueSlotNameCasing"
 	| "lint/nursery/useVueToggleInsideTransition"
 	| "lint/nursery/useVueTypedObjectProps"
 	| "lint/nursery/useVueTypedProps"
 	| "lint/nursery/useVueTypedRef"
+	| "lint/nursery/useVueVModel"
+	| "lint/nursery/useVueVOnExact"
 	| "lint/nursery/useVueValidAttributeName"
 	| "lint/nursery/useVueValidDefaultProp"
 	| "lint/nursery/useVueValidDefineEmits"
 	| "lint/nursery/useVueValidDefineOptions"
 	| "lint/nursery/useVueValidDefineProps"
 	| "lint/nursery/useVueValidNextTick"
-	| "lint/nursery/useVueVOnExact"
 	| "lint/nursery/useVueValidVFor"
 	| "lint/nursery/useVueValidVIs"
 	| "lint/nursery/useVueValidVMemo"
 	| "lint/nursery/useVueValidVModel"
-	| "lint/nursery/useVueVModel"
-	| "lint/nursery/useWhileLoopCondition"
 	| "lint/nursery/useVueValidVShow"
 	| "lint/nursery/useVueValidVSlot"
+	| "lint/nursery/useWhileLoopCondition"
 	| "lint/performance/noAccumulatingSpread"
 	| "lint/performance/noAwaitInLoops"
 	| "lint/performance/noBarrelFile"

@@ -290,6 +290,7 @@ pub mod no_svelte_at_debug_tags;
 pub mod no_svelte_at_html_tags;
 pub mod no_svelte_class_directive;
 pub mod no_svelte_export_let;
+pub mod no_svelte_ignored_unsubscribe;
 pub mod no_svelte_inspect;
 pub mod no_svelte_internal;
 pub mod no_svelte_legacy_const;
